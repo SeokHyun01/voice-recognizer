@@ -1,5 +1,6 @@
 package com.darcy.voicerecognizer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -28,9 +29,7 @@ public class MainActivity extends AppCompatActivity {
         checkAndRequestPermissions();
 
         Button main_btn = findViewById(R.id.main_button);
-        main_btn.setOnClickListener(view -> {
-            startDialogSequence();
-        });
+        main_btn.setOnClickListener(view -> startDialogSequence());
     }
 
     private void checkAndRequestPermissions() {
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -70,8 +69,6 @@ public class MainActivity extends AppCompatActivity {
                     dialogManager.next();
                 },
                 response -> {
-                    Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
-
                     if (response.equals("예")) {
                         dialogManager.next();
                     } else {

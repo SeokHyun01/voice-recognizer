@@ -13,7 +13,6 @@ import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -38,17 +37,11 @@ public class DialogManager implements TextToSpeech.OnInitListener {
     }
 
     public void previous() {
-        Log.d(TAG, "previous");
-        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
         this.setCurrentPromptIndex(this.getCurrentPromptIndex() - 1);
-        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
     }
 
     public void next() {
-        Log.d(TAG, "next");
-        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
         this.setCurrentPromptIndex(this.getCurrentPromptIndex() + 1);
-        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
     }
 
     public void setResponseHandlers(List<Consumer<String>> responseHandlers) {
@@ -62,12 +55,10 @@ public class DialogManager implements TextToSpeech.OnInitListener {
     }
 
     private void initializeTTS() {
-        Log.d(TAG, "initializeTTS");
         tts = new TextToSpeech(context, this);
     }
 
     private void initializeSpeechRecognizer() {
-        Log.d(TAG, "initializeSpeechRecognizer");
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
@@ -103,6 +94,8 @@ public class DialogManager implements TextToSpeech.OnInitListener {
 
                 if (currentPromptIndex < prompts.size()) {
                     speak(prompts.get(currentPromptIndex));
+                } else {
+                    cleanUp();
                 }
             }
 
@@ -143,8 +136,6 @@ public class DialogManager implements TextToSpeech.OnInitListener {
 
     @Override
     public void onInit(int status) {
-        Log.d(TAG, "onInit");
-
         if (status == TextToSpeech.SUCCESS) {
             tts.setLanguage(Locale.KOREAN);
             tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
@@ -180,7 +171,7 @@ public class DialogManager implements TextToSpeech.OnInitListener {
         }
     }
 
-    public void cleanUp() {
+    private void cleanUp() {
         if (tts != null) {
             tts.stop();
             tts.shutdown();
