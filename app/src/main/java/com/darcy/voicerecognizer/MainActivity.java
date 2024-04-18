@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -60,14 +61,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startDialogSequence() {
-        List<String> prompts = Arrays.asList("첫 번째 질문을 시작합니다.", "두 번째 질문입니다.", "마지막 질문이에요.");
+        List<String> prompts = Arrays.asList("어떤 물건을 찾으시나요?", null, "마지막 질문이에요.");
+        DialogManager dialogManager = new DialogManager(this, new ArrayList<>(prompts), null);
         List<Consumer<String>> handlers = Arrays.asList(
-                response -> Toast.makeText(this, "First response: " + response, Toast.LENGTH_SHORT).show(),
-                response -> Toast.makeText(this, "Second response: " + response, Toast.LENGTH_SHORT).show(),
-                response -> Toast.makeText(this, "Final response: " + response, Toast.LENGTH_SHORT).show()
-        );
+                response -> {
+                    int currentPromptIndex = dialogManager.getCurrentPromptIndex();
+                    dialogManager.updatePrompt(currentPromptIndex + 1, response + " 맞나요?");
+                    dialogManager.next();
+                },
+                response -> {
+                    Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
 
-        DialogManager dialogManager = new DialogManager(this, prompts, handlers);
+                    if (response.equals("예")) {
+                        dialogManager.next();
+                    } else {
+                        dialogManager.previous();
+                    }
+                },
+                response -> {
+                    Toast.makeText(this, response, Toast.LENGTH_SHORT).show();
+                    dialogManager.next();
+                }
+        );
+        dialogManager.setResponseHandlers(handlers);
         dialogManager.start();
     }
 }

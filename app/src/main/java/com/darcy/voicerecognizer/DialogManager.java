@@ -26,8 +26,34 @@ public class DialogManager implements TextToSpeech.OnInitListener {
     private SpeechRecognizer speechRecognizer;
     private final Context context;
     private final List<String> prompts;
-    private final List<Consumer<String>> responseHandlers;
+    private List<Consumer<String>> responseHandlers;
     private int currentPromptIndex = 0;
+
+    public int getCurrentPromptIndex() {
+        return currentPromptIndex;
+    }
+
+    public void setCurrentPromptIndex(int currentPromptIndex) {
+        this.currentPromptIndex = currentPromptIndex;
+    }
+
+    public void previous() {
+        Log.d(TAG, "previous");
+        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
+        this.setCurrentPromptIndex(this.getCurrentPromptIndex() - 1);
+        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
+    }
+
+    public void next() {
+        Log.d(TAG, "next");
+        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
+        this.setCurrentPromptIndex(this.getCurrentPromptIndex() + 1);
+        Log.d(TAG, "CurrentPromptIndex: " + this.getCurrentPromptIndex());
+    }
+
+    public void setResponseHandlers(List<Consumer<String>> responseHandlers) {
+        this.responseHandlers = responseHandlers;
+    }
 
     public DialogManager(Context context, List<String> prompts, List<Consumer<String>> responseHandlers) {
         this.context = context;
@@ -74,7 +100,7 @@ public class DialogManager implements TextToSpeech.OnInitListener {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     responseHandlers.get(currentPromptIndex).accept(result);
                 }
-                currentPromptIndex++;
+
                 if (currentPromptIndex < prompts.size()) {
                     speak(prompts.get(currentPromptIndex));
                 }
@@ -145,6 +171,12 @@ public class DialogManager implements TextToSpeech.OnInitListener {
             }
         } else {
             Log.e(TAG, "Initialization Failed!");
+        }
+    }
+
+    public void updatePrompt(int index, String newPrompt) {
+        if (index >= 0 && index < prompts.size()) {
+            prompts.set(index, newPrompt);
         }
     }
 
